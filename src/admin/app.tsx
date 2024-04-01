@@ -1,5 +1,11 @@
 export default {
   config: {
+    translations :{
+      en: {
+        "Auth.form.welcome.title": "Welcome to amFOSS CMS!",
+        "Auth.form.welcome.subtitle": "Log in with your credentials",
+      },
+    },
     locales: [
       // 'ar',
       // 'fr',
@@ -29,7 +35,7 @@ export default {
       // 'zh',
     ],
   },
-  bootstrap(app) {
+  bootstrap(app: any) {
     console.log(app);
   },
 };

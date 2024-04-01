@@ -1,0 +1,13 @@
+{
+  "collectionName": "components_asd_asdasds",
+  "info": {
+    "displayName": "asdasd",
+    "icon": "alien"
+  },
+  "options": {},
+  "attributes": {
+    "asdasd": {
+      "type": "text"
+    }
+  }
+}

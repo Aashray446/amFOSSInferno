@@ -1,0 +1,27 @@
+{
+  "kind": "collectionType",
+  "collectionName": "mentor_mappings",
+  "info": {
+    "singularName": "mentor-mapping",
+    "pluralName": "mentor-mappings",
+    "displayName": "MentorMapping"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "mentor": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "mentor_mappings"
+    },
+    "mentee": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "mentor_mappings"
+    }
+  }
+}

@@ -590,6 +590,53 @@ export interface PluginContentReleasesReleaseAction
   };
 }
 
+export interface PluginI18NLocale extends Schema.CollectionType {
+  collectionName: 'i18n_locale';
+  info: {
+    singularName: 'locale';
+    pluralName: 'locales';
+    collectionName: 'locales';
+    displayName: 'Locale';
+    description: '';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  pluginOptions: {
+    'content-manager': {
+      visible: false;
+    };
+    'content-type-builder': {
+      visible: false;
+    };
+  };
+  attributes: {
+    name: Attribute.String &
+      Attribute.SetMinMax<
+        {
+          min: 1;
+          max: 50;
+        },
+        number
+      >;
+    code: Attribute.String & Attribute.Unique;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'plugin::i18n.locale',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'plugin::i18n.locale',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface PluginUsersPermissionsPermission
   extends Schema.CollectionType {
   collectionName: 'up_permissions';
@@ -695,7 +742,6 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
   };
   options: {
     draftAndPublish: false;
-    timestamps: true;
   };
   attributes: {
     username: Attribute.String &
@@ -724,6 +770,33 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
       'manyToOne',
       'plugin::users-permissions.role'
     >;
+    joinDate: Attribute.Date;
+    discordId: Attribute.String;
+    status_updates: Attribute.Relation<
+      'plugin::users-permissions.user',
+      'oneToMany',
+      'api::status-update.status-update'
+    >;
+    attendances: Attribute.Relation<
+      'plugin::users-permissions.user',
+      'oneToMany',
+      'api::attendance.attendance'
+    >;
+    achievements: Attribute.Relation<
+      'plugin::users-permissions.user',
+      'oneToMany',
+      'api::achievement.achievement'
+    >;
+    mentor_mappings: Attribute.Relation<
+      'plugin::users-permissions.user',
+      'oneToMany',
+      'api::mentor-mapping.mentor-mapping'
+    >;
+    club: Attribute.Relation<
+      'plugin::users-permissions.user',
+      'oneToOne',
+      'api::club.club'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -741,46 +814,185 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
   };
 }
 
-export interface PluginI18NLocale extends Schema.CollectionType {
-  collectionName: 'i18n_locale';
+export interface ApiAchievementAchievement extends Schema.CollectionType {
+  collectionName: 'achievements';
   info: {
-    singularName: 'locale';
-    pluralName: 'locales';
-    collectionName: 'locales';
-    displayName: 'Locale';
-    description: '';
+    singularName: 'achievement';
+    pluralName: 'achievements';
+    displayName: 'Achievement';
   };
   options: {
-    draftAndPublish: false;
-  };
-  pluginOptions: {
-    'content-manager': {
-      visible: false;
-    };
-    'content-type-builder': {
-      visible: false;
-    };
+    draftAndPublish: true;
   };
   attributes: {
-    name: Attribute.String &
-      Attribute.SetMinMax<
-        {
-          min: 1;
-          max: 50;
-        },
-        number
-      >;
-    code: Attribute.String & Attribute.Unique;
+    users_permissions_user: Attribute.Relation<
+      'api::achievement.achievement',
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    title: Attribute.String;
+    description: Attribute.Blocks;
+    date: Attribute.Date;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
-      'plugin::i18n.locale',
+      'api::achievement.achievement',
       'oneToOne',
       'admin::user'
     > &
       Attribute.Private;
     updatedBy: Attribute.Relation<
-      'plugin::i18n.locale',
+      'api::achievement.achievement',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiAttendanceAttendance extends Schema.CollectionType {
+  collectionName: 'attendances';
+  info: {
+    singularName: 'attendance';
+    pluralName: 'attendances';
+    displayName: 'Attendance';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    date: Attribute.Date;
+    status: Attribute.Enumeration<['present', 'absent', 'late']>;
+    timeIn: Attribute.Time;
+    timeOut: Attribute.Time;
+    users_permissions_user: Attribute.Relation<
+      'api::attendance.attendance',
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::attendance.attendance',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::attendance.attendance',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiClubClub extends Schema.CollectionType {
+  collectionName: 'clubs';
+  info: {
+    singularName: 'club';
+    pluralName: 'clubs';
+    displayName: 'club';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    name: Attribute.String;
+    description: Attribute.Text;
+    users_permissions_users: Attribute.Relation<
+      'api::club.club',
+      'oneToMany',
+      'plugin::users-permissions.user'
+    >;
+    status: Attribute.Enumeration<['closed', 'class_room', 'open']>;
+    user: Attribute.Relation<
+      'api::club.club',
+      'oneToOne',
+      'plugin::users-permissions.user'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<'api::club.club', 'oneToOne', 'admin::user'> &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<'api::club.club', 'oneToOne', 'admin::user'> &
+      Attribute.Private;
+  };
+}
+
+export interface ApiMentorMappingMentorMapping extends Schema.CollectionType {
+  collectionName: 'mentor_mappings';
+  info: {
+    singularName: 'mentor-mapping';
+    pluralName: 'mentor-mappings';
+    displayName: 'MentorMapping';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    mentor: Attribute.Relation<
+      'api::mentor-mapping.mentor-mapping',
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    mentee: Attribute.Relation<
+      'api::mentor-mapping.mentor-mapping',
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::mentor-mapping.mentor-mapping',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::mentor-mapping.mentor-mapping',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiStatusUpdateStatusUpdate extends Schema.CollectionType {
+  collectionName: 'status_updates';
+  info: {
+    singularName: 'status-update';
+    pluralName: 'status-updates';
+    displayName: 'StatusUpdate';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    statusUpdate: Attribute.Blocks;
+    timestamp: Attribute.DateTime & Attribute.Required;
+    users_permissions_user: Attribute.Relation<
+      'api::status-update.status-update',
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::status-update.status-update',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::status-update.status-update',
       'oneToOne',
       'admin::user'
     > &
@@ -802,10 +1014,15 @@ declare module '@strapi/types' {
       'plugin::upload.folder': PluginUploadFolder;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
+      'plugin::i18n.locale': PluginI18NLocale;
       'plugin::users-permissions.permission': PluginUsersPermissionsPermission;
       'plugin::users-permissions.role': PluginUsersPermissionsRole;
       'plugin::users-permissions.user': PluginUsersPermissionsUser;
-      'plugin::i18n.locale': PluginI18NLocale;
+      'api::achievement.achievement': ApiAchievementAchievement;
+      'api::attendance.attendance': ApiAttendanceAttendance;
+      'api::club.club': ApiClubClub;
+      'api::mentor-mapping.mentor-mapping': ApiMentorMappingMentorMapping;
+      'api::status-update.status-update': ApiStatusUpdateStatusUpdate;
     }
   }
 }

@@ -1,0 +1,28 @@
+{
+  "kind": "collectionType",
+  "collectionName": "status_updates",
+  "info": {
+    "singularName": "status-update",
+    "pluralName": "status-updates",
+    "displayName": "StatusUpdate"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "statusUpdate": {
+      "type": "blocks"
+    },
+    "timestamp": {
+      "type": "datetime",
+      "required": true
+    },
+    "users_permissions_user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "status_updates"
+    }
+  }
+}
